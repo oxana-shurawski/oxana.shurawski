@@ -918,9 +918,9 @@ btn.addEventListener('click',()=>{const a=document.getElementById('addr').textCo
 .cb-fab{display:flex}
 .cb-v-d{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .cb-say{font:italic 400 24px/1 var(--serif);color:var(--plum);text-shadow:0 0 6px var(--paper),0 0 12px var(--paper),0 0 2px var(--paper);transform:rotate(-3deg);display:flex;align-items:center;gap:4px;white-space:nowrap}
-.cb-say{animation:cbpulse 3.2s ease-in-out infinite;transform-origin:right center}
+.cb-say{animation:cbpulse 2.8s ease-in-out infinite}
 .cb-fab:hover .cb-say{animation-play-state:paused}
-@keyframes cbpulse{0%,100%{transform:rotate(-3deg) scale(1);opacity:.9}50%{transform:rotate(-3deg) scale(1.05);opacity:1}}
+@keyframes cbpulse{0%,100%{-webkit-text-stroke:0 var(--plum)}50%{-webkit-text-stroke:.7px var(--plum)}}
 .cb-say svg{width:34px;height:34px;transform:translateY(8px)}
 .cb-say path{fill:none;stroke:var(--rust);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .cb-dot{width:56px;height:56px;border-radius:50%;background:var(--wave);display:grid;place-items:center;color:#fff;font:italic 400 30px/1 var(--serif);box-shadow:0 14px 30px -12px #2B1630AA;transition:transform .25s}
