@@ -713,6 +713,7 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
         <p data-en="&lt;b&gt;Who:&lt;/b&gt; Oxana Shurawski, oshurawski@yahoo.de."><b>Wer:</b> Oxana Shurawski, oshurawski@yahoo.de.</p>
         <p data-en="&lt;b&gt;What:&lt;/b&gt; Name, email and your message from the contact form, used only to answer your enquiry. Legal basis is your consent (Art. 6(1)(a) GDPR)."><b>Was:</b> Name, E-Mail und Ihre Nachricht aus dem Kontaktformular, nur zur Beantwortung Ihrer Anfrage. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).</p>
         <p data-en="&lt;b&gt;Where it goes:&lt;/b&gt; The message passes through an automation service (n8n) to my inbox, is briefly summarised by an AI model (Anthropic Claude) for sorting and stored in a database (Supabase). You receive an automatic confirmation email."><b>Wohin:</b> Die Nachricht läuft über einen Automatisierungsdienst (n8n) in mein Postfach, wird zur Sortierung kurz von einem KI-Modell (Anthropic Claude) zusammengefasst und in einer Datenbank (Supabase) gespeichert. Sie erhalten eine automatische Eingangsbestätigung.</p>
+        <p data-en="&lt;b&gt;Chat:&lt;/b&gt; Questions to the AI assistant are sent via n8n to an AI model from OpenAI (provider based in the USA) and answered there. I do not store the chat history. Please do not enter personal data. The legal basis is your consent by clicking “Agree and start chat” (Art. 6(1)(a) GDPR)."><b>Chat:</b> Fragen an den KI-Assistenten werden über n8n an ein KI-Modell von OpenAI (Anbieter mit Sitz in den USA) geschickt und dort beantwortet. Von meiner Seite wird der Chatverlauf nicht gespeichert. Bitte keine persönlichen Daten eingeben. Rechtsgrundlage ist die Einwilligung durch Klick auf „Einverstanden, Chat starten“ (Art. 6 Abs. 1 lit. a DSGVO).</p>
         <p data-en="&lt;b&gt;How long:&lt;/b&gt; Until your enquiry is settled, at the latest 6 months."><b>Wie lange:</b> Bis Ihre Anfrage erledigt ist, spätestens 6 Monate.</p>
         <p data-en="&lt;b&gt;Website:&lt;/b&gt; Hosted on GitHub Pages, which processes technically necessary server logs including your IP address. Fonts are loaded from Google Fonts, so your IP address is sent to Google. No cookies, no tracking."><b>Webseite:</b> Gehostet bei GitHub Pages, dabei werden technisch nötige Server-Logs mit Ihrer IP-Adresse verarbeitet. Schriften werden von Google Fonts geladen, dabei geht Ihre IP-Adresse an Google. Keine Cookies, kein Tracking.</p>
         <p data-en="&lt;b&gt;Your rights:&lt;/b&gt; Access, correction, deletion, withdrawal of consent and complaint to a data protection authority."><b>Ihre Rechte:</b> Auskunft, Berichtigung, Löschung, Widerruf der Einwilligung und Beschwerde bei einer Datenschutzbehörde.</p>
@@ -907,6 +908,153 @@ btn.addEventListener('click',()=>{const a=document.getElementById('addr').textCo
   try{navigator.clipboard.writeText(a).then(done,sel)}catch(e){sel()}});
 </script>
 
+
+<script>window.N8N_CHAT_WEBHOOK='https://ki-automatisierung.startplatz-ai-hub.de/webhook/portfolio-chat';</script>
+<!-- chat widget: visitor questions -> n8n webhook (AI agent) -> answer; the URL comes from config.js (window.N8N_CHAT_WEBHOOK) -->
+<style>
+.cb-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:60;border:0;background:none;padding:0;color:inherit;font-family:var(--body);cursor:pointer;text-align:left;transition:transform .2s,opacity .2s}
+.cb-fab[aria-expanded="true"]{opacity:0;pointer-events:none;transform:scale(.9)}
+.cb-fab:focus-visible{outline:2px solid var(--rust);outline-offset:4px;border-radius:18px}
+.cb-fab{display:flex}
+.cb-v-d{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.cb-say{font:italic 400 24px/1 var(--serif);color:var(--plum);text-shadow:0 0 6px var(--paper),0 0 12px var(--paper),0 0 2px var(--paper);transform:rotate(-3deg);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.cb-say svg{width:34px;height:34px;transform:translateY(8px)}
+.cb-say path{fill:none;stroke:var(--rust);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb-dot{width:56px;height:56px;border-radius:50%;background:var(--wave);display:grid;place-items:center;color:#fff;font:italic 400 30px/1 var(--serif);box-shadow:0 14px 30px -12px #2B1630AA;transition:transform .25s}
+.cb-fab:hover .cb-dot{transform:rotate(-8deg) scale(1.06)}
+.cb-panel{margin:0;padding:0;position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:61;width:min(380px,calc(100vw - 36px));height:min(580px,calc(100dvh - 36px));display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 30px 70px -24px #2B1630AA;transform-origin:bottom right;transition:transform .25s,opacity .25s}
+.cb-panel[hidden]{display:flex;opacity:0;transform:scale(.92) translateY(10px);pointer-events:none;visibility:hidden}
+.cb-head{position:relative;display:flex;align-items:center;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid var(--line)}
+.cb-head::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--wave)}
+.cb-av{width:38px;height:38px;border-radius:50%;background:var(--wave);display:grid;place-items:center;color:#fff;font:italic 20px/1 var(--serif);flex:none}
+.cb-title{flex:1;min-width:0}
+.cb-title b{display:block;font:italic 400 22px/1.05 var(--serif)}
+.cb-title small{display:block;color:var(--ink-3);font-size:12.5px;line-height:1.3;margin-top:2px}
+.cb-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:grid;place-items:center;flex:none}
+.cb-x svg{width:16px;height:16px}
+.cb-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+.cb-msg{max-width:86%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.cb-bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
+.cb-me{align-self:flex-end;background:var(--ink);color:var(--paper);border-bottom-right-radius:6px}
+.cb-err{align-self:flex-start;background:var(--blush);color:var(--ink);border-bottom-left-radius:6px}
+.cb-demo{display:block;margin-top:6px;font-size:11.5px;color:var(--ink-3)}
+.cb-dots{display:inline-flex;gap:4px;padding:4px 0}
+.cb-dots i{width:7px;height:7px;border-radius:50%;background:var(--rust);opacity:.35;animation:cbd 1s infinite}
+.cb-dots i:nth-child(2){animation-delay:.15s}.cb-dots i:nth-child(3){animation-delay:.3s}
+@keyframes cbd{40%{opacity:1;transform:translateY(-3px)}}
+.cb-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.cb-chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 12px;font:500 13px/1.2 var(--body);cursor:pointer;text-align:left}
+.cb-chips button:hover{border-color:var(--rust);color:var(--rust)}
+.cb-consent{margin:auto 0 0;padding:14px;border-radius:16px;background:var(--paper-2);font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+.cb-consent a{color:var(--rust)}
+.cb-consent .cta{margin-top:12px;width:100%;justify-content:center;background:var(--rust);color:#fff}
+.cb-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--paper)}
+.cb-form textarea{flex:1;resize:none;height:44px;max-height:110px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:16px/1.35 var(--body)}
+.cb-form textarea:focus{outline:2px solid var(--rust);outline-offset:-1px}
+.cb-send{width:44px;height:44px;border-radius:50%;border:0;background:var(--rust);color:#fff;cursor:pointer;display:grid;place-items:center;flex:none}
+.cb-send:disabled,.cb-form textarea:disabled{opacity:.45;cursor:not-allowed}
+.cb-send svg{width:20px;height:20px}
+@media (max-width:520px){
+  .cb-say{font-size:20px}
+  .cb-panel{right:0;bottom:0;width:100vw;height:min(88dvh,640px);border-radius:22px 22px 0 0;border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){.cb-panel,.cb-fab{transition:none}.cb-dots i{animation:none;opacity:.8}}
+</style>
+
+<button class="cb-fab" id="cb-fab" aria-expanded="false" aria-controls="cb-panel" aria-label="Chat mit Oxanas KI-Assistentin öffnen">
+  <span class="cb-v-d"><span class="cb-say"><span data-cb="say">Fragen? Frag meine KI</span> <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M4 6c14 0 22 6 24 20M20 22l8 5 3-9"/></svg></span><span class="cb-dot" aria-hidden="true">O</span></span>
+</button>
+<div class="cb-panel" id="cb-panel" role="dialog" aria-labelledby="cb-title" hidden>
+  <div class="cb-head">
+    <div class="cb-av" aria-hidden="true">O</div>
+    <div class="cb-title"><b id="cb-title" data-cb="title">Frag meine KI</b><small data-cb="sub">Oxanas KI-Assistentin</small></div>
+    <button class="cb-x" id="cb-x" aria-label="Chat schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="cb-log" id="cb-log" aria-live="polite"></div>
+  <div class="cb-chips" id="cb-chips" hidden></div>
+  <form class="cb-form" id="cb-form">
+    <textarea id="cb-in" rows="1" maxlength="500" disabled aria-label="Deine Frage"></textarea>
+    <button class="cb-send" id="cb-send" disabled aria-label="Senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </form>
+</div>
+
+<script>
+(()=>{
+const HOOK=window.N8N_CHAT_WEBHOOK||'';
+const $=id=>document.getElementById(id);
+const fab=$('cb-fab'),panel=$('cb-panel'),log=$('cb-log'),chips=$('cb-chips'),form=$('cb-form'),inp=$('cb-in'),send=$('cb-send');
+const lg=()=>document.documentElement.lang==='en'?'en':'de';
+const T={
+  de:{say:'Fragen? Frag meine KI',title:'Frag meine KI',sub:'Oxanas KI-Assistentin',ph:'Deine Frage …',
+    hi:'Hallo! Ich bin Oxanas KI-Assistentin. Frag mich gern zu ihrem Werdegang, ihren Projekten oder ihrer Arbeit mit KI.',
+    consent:'Deine Fragen werden über n8n an ein KI-Modell (OpenAI) geschickt, nur um sie zu beantworten. Von meiner Seite wird nichts gespeichert. Bitte gib keine persönlichen Daten ein. Die KI kann sich irren. <a href="#datenschutz">Datenschutzhinweis</a>',
+    start:'Einverstanden, Chat starten',chips:['Was macht Oxana beruflich?','Welche KI-Projekte hat sie gebaut?','Wie erreiche ich sie?'],
+    err:'Das hat leider nicht geklappt. Versuch es gleich noch einmal oder nutz das Kontaktformular.',demo:'Vorschau-Modus: Beispielantwort',close:'Chat schließen'},
+  en:{say:'Questions? Ask my AI',title:'Ask my AI',sub:'AI assistant about Oxana\'s profile and projects',ph:'Your question …',
+    hi:'Hi! I am Oxana\'s AI assistant. Ask me about her background, her projects or her work with AI.',
+    consent:'Your questions are sent via n8n to an AI model (OpenAI) only to answer them. I do not store the chat. Please do not enter personal data. The AI can make mistakes. <a href="#datenschutz">Privacy note</a>',
+    start:'Agree and start chat',chips:['What does Oxana do?','Which AI projects has she built?','How can I reach her?'],
+    err:'Sorry, that did not work. Please try again or use the contact form.',demo:'Preview mode: sample answer',close:'Close chat'}};
+const t=k=>T[lg()][k];
+let sid='';try{sid=sessionStorage.getItem('cb-sid')||''}catch(e){}
+if(!sid){sid=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));try{sessionStorage.setItem('cb-sid',sid)}catch(e){}}
+let started=false,busy=false;
+
+function bubble(text,cls,demo){
+  const d=document.createElement('div');d.className='cb-msg '+cls;d.textContent=text;
+  if(demo){const s=document.createElement('small');s.className='cb-demo';s.textContent=t('demo');d.append(s)}
+  log.append(d);log.scrollTop=log.scrollHeight;return d;
+}
+function texts(){
+  document.querySelectorAll('[data-cb]').forEach(e=>e.textContent=t(e.dataset.cb));
+  inp.placeholder=t('ph');$('cb-x').setAttribute('aria-label',t('close'));
+  if(!started)intro();else renderChips();
+}
+function intro(){
+  log.innerHTML='';bubble(t('hi'),'cb-bot');
+  const c=document.createElement('div');c.className='cb-consent';c.innerHTML=t('consent');
+  const b=document.createElement('button');b.type='button';b.className='cta';b.textContent=t('start');
+  b.onclick=()=>{started=true;c.remove();inp.disabled=send.disabled=false;renderChips();inp.focus()};
+  c.append(b);log.append(c);
+  c.querySelector('a').addEventListener('click',()=>{const d=$('datenschutz');if(d)d.open=true;close()});
+}
+function renderChips(){
+  chips.innerHTML='';chips.hidden=log.querySelectorAll('.cb-me').length>0;
+  t('chips').forEach(q=>{const b=document.createElement('button');b.type='button';b.textContent=q;b.onclick=()=>ask(q);chips.append(b)});
+}
+function open(){panel.hidden=false;fab.setAttribute('aria-expanded','true');(started?inp:panel.querySelector('.cb-consent .cta')||inp).focus()}
+function close(){panel.hidden=true;fab.setAttribute('aria-expanded','false');fab.focus()}
+fab.onclick=open;$('cb-x').onclick=close;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close()});
+
+// without a webhook (preview) the widget answers with fixed sample texts
+function demo(q){
+  const s=q.toLowerCase(),en=lg()==='en';
+  if(/projekt|project|gebaut|built|hiesig|news/.test(s))return en?'Among other things, she built an AI news feed with the New York Times API, the product search "Hiesig" for goods made in Europe, and an AI lead pipeline for her contact form with n8n, Claude and Supabase.':'Sie hat unter anderem einen KI-News-Feed mit der New-York-Times-API gebaut, die Produktsuche „Hiesig“ für Waren aus Europa und eine KI-Lead-Pipeline für ihr Kontaktformular mit n8n, Claude und Supabase.';
+  if(/erreich|kontakt|reach|contact|mail/.test(s))return en?'The easiest way is the contact form on this page, or by email to oshurawski@yahoo.de.':'Am einfachsten über das Kontaktformular auf dieser Seite oder per E-Mail an oshurawski@yahoo.de.';
+  return en?'Oxana connects partnerships, sales and AI. She won over 150 partner companies at the Digital Career Institute and is currently training as an AI manager at STARTPLATZ in Cologne.':'Oxana verbindet Partnerschaften, Vertrieb und KI. Am Digital Career Institute hat sie über 150 Partnerunternehmen gewonnen, und gerade macht sie eine Weiterbildung zur KI-Managerin am STARTPLATZ in Köln.';
+}
+function ask(q){
+  q=q.trim();if(!q||busy||!started)return;
+  busy=true;send.disabled=true;chips.hidden=true;inp.value='';grow();
+  bubble(q,'cb-me');
+  const w=bubble('','cb-bot');w.innerHTML='<span class="cb-dots" aria-label="…"><i></i><i></i><i></i></span>';
+  const done=(a,cls,dm)=>{w.remove();bubble(a,cls,dm);busy=false;send.disabled=false;inp.focus()};
+  if(!HOOK){setTimeout(()=>done(demo(q),'cb-bot',true),900);return}
+  // form-encoded body: n8n reads it as fields, and the browser needs no CORS preflight
+  fetch(HOOK,{method:'POST',body:new URLSearchParams({sessionId:sid,nachricht:q,sprache:lg(),seite:location.href})})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>{const a=(d&&(d.antwort||d.output))||'';if(!a)throw 0;done(a,'cb-bot')})
+    .catch(()=>done(t('err'),'cb-err'));
+}
+function grow(){inp.style.height='44px';inp.style.height=Math.min(inp.scrollHeight,110)+'px'}
+inp.addEventListener('input',grow);
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask(inp.value)}});
+form.addEventListener('submit',e=>{e.preventDefault();ask(inp.value)});
+new MutationObserver(texts).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+texts();
+})();
+</script>
 
 </body>
 </html>
