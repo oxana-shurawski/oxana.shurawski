@@ -343,6 +343,68 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
 .proj.soon{background:color-mix(in srgb,var(--lilac) 18%,var(--paper));border-style:dashed}
 .proj.soon::before{opacity:.3}
 @media (max-width:900px){.proj-grid{grid-template-columns:1fr}}
+/* flip cards: tap a project card to see the back side; the back keeps the card's size and pages through its content */
+.flip{perspective:1600px;min-width:0}
+.flip-in{position:relative;height:100%;transition:transform .7s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.flip .face{backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:pointer}
+.flip .front{height:100%}
+.flip .back{position:absolute;inset:0;transform:rotateY(180deg)}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.proj .tags .flip-btn{margin-left:auto}
+.flip-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:4px}
+.flip-btn{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--plum) 22%,transparent);background:var(--paper);color:var(--plum);font:inherit;font-size:12.5px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .2s,color .2s}
+.flip-btn i{font-style:normal}
+.flip-btn:hover{background:var(--plum);color:var(--paper)}
+.flip-btn:focus-visible,.proj-link:focus-visible,.pg button:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.flip-go{color:var(--rust);border-color:color-mix(in srgb,var(--rust) 35%,transparent)}
+/* flip affordance, shared */
+.flip .fl-txt{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.flip-open .fl-hand{display:none}
+.flip-btn .fl-turn{flex:none}
+.projects .flip-hint{display:none}
+/* a: a thin turn arrow, a slight tilt on hover and a one-time peek when the cards come into view */
+[data-v="a"] .flip-open,[data-v="a"] .flip-back{position:absolute;right:8px;bottom:8px;z-index:2;width:30px;height:30px;min-height:0;padding:0;border:0;border-radius:50%;background:none;color:var(--rust);justify-content:center}
+[data-v="a"] .fl-turn{width:16px;height:16px;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+[data-v="a"] .flip-open:hover,[data-v="a"] .flip-back:hover{background:none;color:var(--rust)}
+[data-v="a"] .flip-open:hover .fl-turn{transform:rotate(180deg)}
+[data-v="a"] .flip-back:hover .fl-turn{transform:rotate(-180deg)}
+[data-v="a"] .back .flip-row{padding-right:14px}
+@media (hover:hover){[data-v="a"] .flip:not(.on):hover .flip-in{transform:rotateY(-7deg)}[data-v="a"] .flip:not(.on):hover .fl-turn{transform:rotate(180deg)}}
+[data-v="a"] .flip.peek:not(.on) .flip-in{animation:peek 1.3s cubic-bezier(.3,.7,.3,1)}
+@keyframes peek{0%,100%{transform:none}40%{transform:rotateY(-26deg)}}
+/* b: hint line above the cards, a small hand button, and a tap effect */
+[data-v="b"] .flip-hint{display:inline-flex;align-items:center;gap:8px;margin:0;font-size:14px;color:var(--ink-2)}
+[data-v="b"] .hint-hand{width:20px;height:20px;color:var(--rust);transform-origin:40% 20%;animation:handTap 3.2s ease-in-out infinite}
+@keyframes handTap{0%,70%,100%{transform:none}78%{transform:translateY(2px) scale(.9)}86%{transform:none}}
+[data-v="b"] .flip-open,[data-v="b"] .flip-open:hover{position:absolute;right:8px;bottom:8px;z-index:2;width:30px;height:30px;min-height:0;padding:0;border:0;background:none;color:var(--ink);opacity:.55;justify-content:center;transition:opacity .2s}
+[data-v="b"] .flip:hover .flip-open{opacity:.9}
+[data-v="b"] .flip-open .fl-turn{display:none}
+[data-v="b"] .flip-back .fl-turn{width:14px;height:14px}
+[data-v="b"] .flip-open .fl-hand{display:block;width:17px;height:17px}
+[data-v="b"] .back .flip-back .fl-txt{position:static;width:auto;height:auto;clip-path:none}
+.tap-fx{position:absolute;z-index:5;pointer-events:none;width:0;height:0}
+.tap-fx::before{content:"";position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;border:2px solid var(--rust);opacity:0;animation:tapRing .6s ease-out}
+.tap-fx .fl-hand{position:absolute;left:-10px;top:-3px;width:30px;height:30px;color:var(--plum);opacity:0;animation:tapHand .7s ease-out}
+@keyframes tapRing{0%{transform:scale(.3);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+@keyframes tapHand{0%{transform:translate(4px,8px) scale(1.1);opacity:0}30%{transform:none;opacity:1}55%{transform:scale(.9);opacity:1}100%{transform:translateY(6px);opacity:0}}
+.proj-link{color:inherit;text-decoration:none}
+.proj-link:hover{color:var(--rust)}
+.back-body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.back-body .bk{margin:0;animation:bkIn .45s ease}
+.back-body .bk[hidden]{display:none}
+@keyframes bkIn{from{opacity:0;transform:translateX(10px)}}
+.back-intro{font-size:14.5px!important;color:var(--ink)!important}
+.back-body .item{position:relative;padding-left:16px}
+.back-body .item::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--rust);opacity:.7}
+.back-body b{font-weight:500;color:var(--ink)}
+.back-foot{font-size:13.5px!important;font-style:italic}
+.pg{display:flex;gap:2px;margin-left:auto;order:2}
+.flip-back{order:-1}
+.pg button{width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;border-radius:50%}
+.pg button::before{content:"";width:7px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--plum) 25%,transparent);transition:background .2s,transform .2s}
+.pg button[aria-current="true"]::before{background:var(--rust);transform:scale(1.25)}
+@media (prefers-reduced-motion:reduce){.flip-in{transform:none!important}.flip .back{transform:none}.flip .face{backface-visibility:visible}.flip:not(.on) .back,.flip.on .front{visibility:hidden}}
+
 
 /* news inside project card 01: one headline at a time, slow fade */
 .proj-meta{display:flex;align-items:center;gap:10px;min-width:0}
@@ -488,33 +550,55 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
       </ul>
     </div>
   </div>
-  <div class="wrap projects">
+  <div class="wrap projects" data-v="b">
     <div class="projects-head rv">
       <div>
         <h3 data-en="Projects I &lt;span class=&quot;serif&quot; style=&quot;color:var(--rust)&quot;&gt;built myself&lt;/span&gt;">Projekte, die ich <span class="serif" style="color:var(--rust)">selbst gebaut habe</span></h3>
       </div>
+      <p class="flip-hint"><svg class="fl-hand hint-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span data-en="Click the cards for more details">Klick auf die Karten für mehr Infos</span></p>
     </div>
     <div class="proj-grid">
-      <div class="proj lab rv" id="news">
+      <div class="flip rv"><div class="flip-in">
+      <div class="proj lab face front" id="news">
         <div class="proj-top"><span class="proj-no">01</span><span class="proj-meta"><span class="proj-src"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13v13a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2Z"/><path d="M17 9h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></svg>New York Times</span><span class="chip live"><i aria-hidden="true"></i>live</span></span></div>
         <h4 data-en="AI News API">KI-News API</h4>
         <p class="news-about" data-en="Fresh AI headlines from The New York Times, fetched via API. The key stays safe in an .env file.">Aktuelle KI-Schlagzeilen der New York Times, per API geholt. Der Schlüssel bleibt sicher in einer .env-Datei.</p>
         <div class="news-card" id="news-card" aria-live="polite" hidden></div>
         <div class="news-foot" id="news-foot" hidden><button class="news-skip" id="news-next" type="button" aria-label="Nächste Schlagzeile" title="Nächste Schlagzeile"><span class="news-bar" aria-hidden="true"><i id="news-bar"></i></span></button><span class="news-count" id="news-count"></span></div>
-        <div class="tags"><span>New York Times API</span><span>.env</span><span>PowerShell</span></div>
+        <div class="tags"><span>New York Times API</span><span>.env</span><span>PowerShell</span></div><button class="flip-btn flip-open" type="button" aria-expanded="false"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg><svg class="fl-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="fl-txt" data-en="More details">Mehr dazu</span></button>
       </div>
-      <div class="proj lab soon rv">
+      <div class="proj lab face back" inert>
+        <div class="proj-top"><span class="proj-no">01</span><span class="chip" data-en="How it works">So funktioniert es</span></div>
+        <div class="back-body"><div class="bk item" data-en="Pulls the latest AI articles via the New York Times API">Holt über die New York Times API die neuesten Artikel zum Thema KI</div><div class="bk item" data-en="GitHub Actions refreshes the headlines automatically twice a day">GitHub Actions aktualisiert die Schlagzeilen automatisch zweimal täglich</div><div class="bk item" data-en="The API key never sits in the code but safely in an .env file or GitHub Secret">Der API-Schlüssel steht nie im Code, sondern liegt sicher als .env-Datei bzw. GitHub Secret</div><div class="bk item" data-en="Learned: how APIs, keys and automation work together">Gelernt: wie APIs, Schlüssel und Automatisierung zusammenspielen</div></div>
+        <div class="flip-row"><span class="pg" aria-label="Seiten"></span><button class="flip-btn flip-back" type="button"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="fl-txt" data-en="Back">Zurück</span></button></div>
+      </div>
+      </div></div>
+      <div class="flip rv"><div class="flip-in">
+      <div class="proj lab soon face front">
         <div class="proj-top"><span class="proj-no">02</span><span class="chip" data-en="Launch Jan/Feb 2027">Launch Jan/Feb 2027</span></div>
         <h4 data-en="Side project: self-service offering">Nebenprojekt: SB-Dienstleistung</h4>
-        <p data-en="A private project alongside my job, where I learn a lot hands-on: researching the market, calculating prices, building pages, automating processes. Launch in January/February 2027.">Ein privates Projekt neben dem Job, an dem ich viel Praktisches lerne: Markt recherchieren, Preise kalkulieren, Seiten bauen, Abläufe automatisieren. Start im Januar/Februar 2027.</p>
-        <div class="tags"><span data-en="Price calculation">Preiskalkulation</span><span>Landing Pages</span><span data-en="Automation">Automation</span></div>
+        <p data-en="A self-service offering with no staff on site: fully automated, controlled remotely and built to run reliably on its own.">Ein Selbstbedienungsangebot ganz ohne Personal vor Ort: vollständig automatisiert, aus der Ferne steuerbar und so gebaut, dass es zuverlässig von selbst läuft.</p>
+        <div class="tags"><span data-en="Price calculation">Preiskalkulation</span><span>Landing Pages</span><span data-en="Automation">Automation</span></div><button class="flip-btn flip-open" type="button" aria-expanded="false"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg><svg class="fl-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="fl-txt" data-en="More details">Mehr dazu</span></button>
       </div>
-      <a class="proj lab rv" href="https://hiesig.netlify.app" target="_blank" rel="noopener">
+      <div class="proj lab face back soon" inert>
+        <div class="proj-top"><span class="proj-no">02</span><span class="chip" data-en="What&#39;s behind it">Was dahintersteckt</span></div>
+        <div class="back-body"><p class="bk back-intro" data-en="Built together with my partner: my focus is the tech, everything else we do together, right down to fitting out the space on site.">Gemeinsam mit meinem Partner aufgebaut: Mein Schwerpunkt ist die Technik, alles andere machen wir zusammen, bis hin zur Einrichtung vor Ort.</p><div class="bk item" data-en="&lt;b&gt;Market research:&lt;/b&gt; market and competitor analysis, sharpening the offer"><b>Marktrecherche:</b> Markt- und Wettbewerbsanalyse, Schärfung des Angebots</div><div class="bk item" data-en="&lt;b&gt;Pricing:&lt;/b&gt; cost structure and pricing model"><b>Preiskalkulation:</b> Kostenstruktur und Preismodell</div><div class="bk item" data-en="&lt;b&gt;Website &amp;amp; landing pages:&lt;/b&gt; concept and build, incl. a verification interface"><b>Website &amp; Landing Pages:</b> Konzeption und Umsetzung, inkl. Interface zur Verifikation</div><div class="bk item" data-en="&lt;b&gt;Automation &amp;amp; remote control:&lt;/b&gt; processes that run without on-site staff and are monitored remotely"><b>Automatisierung &amp; Fernsteuerung:</b> Prozesse, die ohne Personal vor Ort laufen und remote überwacht werden</div><div class="bk item" data-en="&lt;b&gt;Tech &amp;amp; hosting:&lt;/b&gt; architecture focused on security and reliability"><b>Technik &amp; Hosting:</b> Architektur mit Fokus auf Sicherheit und Ausfallsicherheit</div><div class="bk item" data-en="&lt;b&gt;Marketing &amp;amp; UX:&lt;/b&gt; co-designed user flow and messaging"><b>Marketing &amp; UX:</b> Nutzerführung und Kommunikation mitgestaltet</div><div class="bk item" data-en="&lt;b&gt;Location &amp;amp; fit-out:&lt;/b&gt; finding the premises and setting everything up on site"><b>Standort &amp; Einrichtung:</b> Räume gefunden und vor Ort eingerichtet</div><div class="bk item" data-en="&lt;b&gt;Pilot phase:&lt;/b&gt; tests with selected users before launch"><b>Pilotphase:</b> Tests mit ausgewählten Nutzern vor dem Launch</div><p class="bk back-foot" data-en="Details follow at launch, happy to share more in a personal conversation.">Details zum Angebot folgen zum Launch, vorab gern im persönlichen Gespräch.</p></div>
+        <div class="flip-row"><span class="pg" aria-label="Seiten"></span><button class="flip-btn flip-back" type="button"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="fl-txt" data-en="Back">Zurück</span></button></div>
+      </div>
+      </div></div>
+      <div class="flip rv"><div class="flip-in">
+      <div class="proj lab face front">
         <div class="proj-top"><span class="proj-no">03</span></div>
-        <h4>Hiesig <span style="color:var(--rust)">&#8599;</span></h4>
-        <p data-en="My own business idea: a product search for goods made in Europe only, filterable by sustainability labels. From market research via data concept and web design to a live MVP. Affiliate revenue model in preparation.">Eigene Geschäftsidee: Produktsuche nur für Waren aus Europa, filterbar nach Nachhaltigkeitssiegeln. Von der Marktrecherche über Datenkonzept und Webdesign zum MVP, das live ist. Affiliate-Erlösmodell in Vorbereitung.</p>
-        <div class="tags"><span>MVP</span><span data-en="Data concept">Datenkonzept</span><span data-en="Affiliate model">Affiliate-Modell</span></div>
-      </a>
+        <h4><a class="proj-link" href="https://hiesig.eu" target="_blank" rel="noopener">hiesig <span style="color:var(--rust)">&#8599;</span></a></h4>
+        <p data-en="The vision: shopping online should strengthen makers and retailers from Germany and Europe instead of ending up with the big overseas platforms by default. With origin and sustainability filters, at hiesig.eu.">Die Vision: Wer online einkauft, soll Hersteller und Händler aus Deutschland und Europa stärken, statt automatisch bei den großen Plattformen aus Übersee zu landen. Mit Herkunfts- und Nachhaltigkeitsfilter, auf hiesig.eu.</p>
+        <div class="tags"><span>MVP</span><span data-en="Data concept">Datenkonzept</span><span data-en="Affiliate model">Affiliate-Modell</span></div><button class="flip-btn flip-open" type="button" aria-expanded="false"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg><svg class="fl-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="fl-txt" data-en="More details">Mehr dazu</span></button>
+      </div>
+      <div class="proj lab face back" inert>
+        <div class="proj-top"><span class="proj-no">03</span><span class="chip" data-en="The road to the MVP">Der Weg zum MVP</span></div>
+        <div class="back-body"><div class="bk item" data-en="The idea came up over a year ago, back then it was too big for me and for AI">Die Idee entstand vor über einem Jahr, damals war sie für mich und die KI noch zu umfangreich</div><div class="bk item" data-en="Picked up again during my AI training: researched with Claude, built the data concept and design">In der Weiterbildung wieder aufgegriffen: mit Claude recherchiert, Datenkonzept und Design entwickelt</div><div class="bk item" data-en="A product search for goods from Germany and Europe only, filterable by sustainability labels">Produktsuche nur für Waren aus Deutschland und Europa, filterbar nach Nachhaltigkeitssiegeln</div><div class="bk item" data-en="The name says it: &lt;i&gt;hiesig&lt;/i&gt; means &quot;from here&quot;. A small counter-model to Amazon and AliExpress: short distances, value created in Germany and Europe">Der Name ist Programm: <i>hiesig</i> heißt „von hier“. Ein kleiner Gegenentwurf zu Amazon und AliExpress: kurze Wege, Wertschöpfung in Deutschland und Europa</div><div class="bk item" data-en="From market research via data concept and web design to a live MVP">Von der Marktrecherche über Datenkonzept und Webdesign zum MVP, das live ist</div><div class="bk item" data-en="Next step: affiliate revenue model">Nächster Schritt: Affiliate-Erlösmodell</div></div>
+        <div class="flip-row"><span class="pg" aria-label="Seiten"></span><a class="flip-btn flip-go" href="https://hiesig.eu" target="_blank" rel="noopener" data-en="To the site &#8599;">Zur Seite &#8599;</a><button class="flip-btn flip-back" type="button"><svg class="fl-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="fl-txt" data-en="Back">Zurück</span></button></div>
+      </div>
+      </div></div>
     </div>
   </div>
 </section>
@@ -657,7 +741,7 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
             <div class="lang"><span data-en="Swedish">Schwedisch</span><div class="bar"><i style="width:22%"></i></div><em>A</em></div>
           </div>
         </div>
-      </div>
+      </div></div>
     </div>
   </div>
 </section>
@@ -784,7 +868,7 @@ const TOOLS=[
   {n:'Make',g:4,i:'make',de:'Kontakt-Automation, kostenlose Alternative zu n8n',en:'Contact automation, free alternative to n8n'},
   {n:'Gamma',g:4,i:'gamma',de:'Präsentationen mit KI',en:'Presentations with AI'},
   {n:'Higgsfield',g:4,i:'higgsfield',de:'KI-Video',en:'AI video'},
-  {n:'Netlify',g:4,i:'netlify',de:'Hosting für mein Projekt Hiesig',en:'Hosting for my project Hiesig'},
+  {n:'Netlify',g:4,i:'netlify',de:'Hosting für mein Projekt hiesig',en:'Hosting for my project hiesig'},
   {n:'fal.ai',g:4,i:'fal',de:'Bildmodelle ausprobieren',en:'Trying out image models'}
 ];
 const L=()=>document.documentElement.lang==='en'?'en':'de';
@@ -851,6 +935,49 @@ if(location.hash==='#en')start='en';
 if(start==='en')setLang('en');
 
 
+/* flip cards: tap anywhere on a card (except links and buttons) or use the button; the hidden side is inert.
+   The back has the front's size; its blocks are split into pages that fit, tap the back (or a dot) for the next page. */
+document.querySelectorAll('.flip').forEach(f=>{
+  const [fr,bk]=f.querySelectorAll('.face'),body=bk.querySelector('.back-body'),dots=bk.querySelector('.pg');
+  const blocks=[...body.children];let pages=[],at=0;
+  const show=n=>{at=(n+pages.length)%pages.length;
+    blocks.forEach(b=>b.hidden=!pages[at].includes(b));
+    [...dots.children].forEach((d,i)=>d.setAttribute('aria-current',i===at))};
+  const paginate=()=>{blocks.forEach(b=>b.hidden=false);
+    const room=body.clientHeight,gap=8;pages=[[]];let h=0;
+    blocks.forEach(b=>{const bh=b.offsetHeight;
+      if(pages.at(-1).length&&h+gap+bh>room){pages.push([]);h=0}
+      h+=(pages.at(-1).length?gap:0)+bh;pages.at(-1).push(b)});
+    const en=document.documentElement.lang==='en';
+    dots.innerHTML=pages.length>1?pages.map((_,i)=>`<button type="button" aria-label="${en?'Page':'Seite'} ${i+1}/${pages.length}"></button>`).join(''):'';
+    show(Math.min(at,pages.length-1))};
+  const set=(on,kb)=>{f.classList.toggle('on',on);fr.inert=on;bk.inert=!on;
+    fr.querySelector('.flip-btn').setAttribute('aria-expanded',on);
+    if(on)show(0);
+    if(kb)(on?bk:fr).querySelector('.flip-btn:not(.flip-go)').focus({preventScroll:true})};
+  f.addEventListener('click',ev=>{
+    if(getSelection().toString())return;
+    const d=ev.target.closest('.pg button');
+    if(d){show([...dots.children].indexOf(d));return}
+    const t=ev.target.closest('a,button');
+    if(t&&(!t.classList.contains('flip-btn')||t.classList.contains('flip-go')))return;
+    if(!t&&f.classList.contains('on')&&pages.length>1){show(at+1);return}
+    set(!f.classList.contains('on'),ev.detail===0)});
+  new ResizeObserver(paginate).observe(fr);
+  new MutationObserver(()=>requestAnimationFrame(paginate)).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  document.fonts&&document.fonts.ready.then(paginate);
+});
+/* variant a: each card peeks once (a short half turn) the first time it is fully in view */
+{const io=window.IntersectionObserver&&new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;io.unobserve(en.target);
+  const i=[...document.querySelectorAll('.flip')].indexOf(en.target);setTimeout(()=>en.target.classList.add('peek'),400+i*220)}),{threshold:.9});
+  io&&document.querySelectorAll('.flip').forEach(f=>io.observe(f))}
+/* variant b: show a tapping hand where the card was clicked */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',ev=>{
+  if(!ev.detail||f.closest('[data-v]').dataset.v!=='b'||ev.target.closest('a')||reduce)return;
+  const r=f.getBoundingClientRect(),fx=document.createElement('span');
+  fx.className='tap-fx';fx.style.left=ev.clientX-r.left+'px';fx.style.top=ev.clientY-r.top+'px';
+  fx.innerHTML=document.querySelector('.hint-hand').outerHTML.replace(' hint-hand','');
+  f.appendChild(fx);setTimeout(()=>fx.remove(),800)}));
 /* news in project card 01: reads data/news.json (created by fetch-news.ps1 with the NYT API), next headline every 10 s or on click.
    no-store + timestamp, so a visitor never gets yesterday's headlines from the browser cache */
 fetch('data/news.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(items=>{
@@ -1034,7 +1161,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close
 // without a webhook (preview) the widget answers with fixed sample texts
 function demo(q){
   const s=q.toLowerCase(),en=lg()==='en';
-  if(/projekt|project|gebaut|built|hiesig|news/.test(s))return en?'Among other things, she built an AI news feed with the New York Times API, the product search "Hiesig" for goods made in Europe, and an AI lead pipeline for her contact form with n8n, Claude and Supabase.':'Sie hat unter anderem einen KI-News-Feed mit der New-York-Times-API gebaut, die Produktsuche „Hiesig“ für Waren aus Europa und eine KI-Lead-Pipeline für ihr Kontaktformular mit n8n, Claude und Supabase.';
+  if(/projekt|project|gebaut|built|hiesig|news/.test(s))return en?'Among other things, she built an AI news feed with the New York Times API, the product search "hiesig" for goods made in Europe, and an AI lead pipeline for her contact form with n8n, Claude and Supabase.':'Sie hat unter anderem einen KI-News-Feed mit der New-York-Times-API gebaut, die Produktsuche „hiesig“ für Waren aus Europa und eine KI-Lead-Pipeline für ihr Kontaktformular mit n8n, Claude und Supabase.';
   if(/erreich|kontakt|reach|contact|mail/.test(s))return en?'The easiest way is the contact form on this page, or by email to oshurawski@yahoo.de.':'Am einfachsten über das Kontaktformular auf dieser Seite oder per E-Mail an oshurawski@yahoo.de.';
   return en?'Oxana connects partnerships, sales and AI. She won over 150 partner companies at the Digital Career Institute and is currently training as an AI manager at STARTPLATZ in Cologne.':'Oxana verbindet Partnerschaften, Vertrieb und KI. Am Digital Career Institute hat sie über 150 Partnerunternehmen gewonnen, und gerade macht sie eine Weiterbildung zur KI-Managerin am STARTPLATZ in Köln.';
 }
