@@ -1144,7 +1144,7 @@ if(!sid){sid=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math
 let started=false,busy=false;
 
 function bubble(text,cls,demo){
-  const d=document.createElement('div');d.className='cb-msg '+cls;d.textContent=text;
+  const d=document.createElement('div');d.className='cb-msg '+cls;d.textContent=cls.includes('cb-bot')?String(text).replace(/\*\*(.+?)\*\*/g,'$1').replace(/^[ \t]*[*-][ \t]+/gm,'\u2022 ').replace(/\*/g,''):text;
   if(demo){const s=document.createElement('small');s.className='cb-demo';s.textContent=t('demo');d.append(s)}
   log.append(d);log.scrollTop=log.scrollHeight;return d;
 }
