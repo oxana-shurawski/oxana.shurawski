@@ -232,10 +232,13 @@ section{padding-block:104px}
 .contact h2 .serif{background:var(--wave);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.06em}
 .contact p.lead{max-width:52ch;color:var(--ink-2);margin:26px 0 0;font-size:19px}
 .c-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px;align-items:center}
-.mail{display:flex;align-items:center;gap:6px;padding:8px 8px 8px 22px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:clamp(16px,2.2vw,20px);font-weight:500;max-width:100%}
-.mail span{user-select:all;overflow-wrap:anywhere}
+.mail{display:flex;align-items:center;gap:6px;max-width:100%;font-size:clamp(16px,2.2vw,20px);font-weight:500}
+.mail.show{padding:8px 8px 8px 22px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.mail span{user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+.mail span[hidden]{display:none}
+.mail .cta{padding:12px 22px}
 .mail button{flex:none}
-@media (max-width:420px){.mail{font-size:15px;padding-left:16px}.mail span{overflow-wrap:normal;white-space:nowrap}.mail button{padding:9px 14px;font-size:14px}}
+@media (max-width:420px){.mail{font-size:15px}.mail.show{padding-left:16px}.mail span{overflow-wrap:normal;white-space:nowrap}.mail button{padding:9px 14px;font-size:14px}}
 .where{color:var(--ink-3);font-size:15px}
 
 
@@ -807,7 +810,7 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
     <details class="dsh" id="datenschutz">
       <summary data-en="Privacy note">Datenschutzhinweis</summary>
       <div class="dsh-body">
-        <p data-en="&lt;b&gt;Who:&lt;/b&gt; Oxana Shurawski, oshurawski@yahoo.de."><b>Wer:</b> Oxana Shurawski, oshurawski@yahoo.de.</p>
+        <p data-en="&lt;b&gt;Who:&lt;/b&gt; Oxana Shurawski, &lt;span class=&quot;oxm&quot;&gt;&lt;/span&gt;."><b>Wer:</b> Oxana Shurawski, <span class="oxm"></span>.</p>
         <p data-en="&lt;b&gt;What:&lt;/b&gt; Name, email and your message from the contact form, used only to answer your enquiry. Legal basis is your consent (Art. 6(1)(a) GDPR)."><b>Was:</b> Name, E-Mail und deine Nachricht aus dem Kontaktformular, nur zur Beantwortung deiner Anfrage. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).</p>
         <p data-en="&lt;b&gt;Where it goes:&lt;/b&gt; The message passes through an automation service (Make) to my inbox and is briefly summarised by an AI model (Google Gemini) for sorting. You receive an automatic confirmation email."><b>Wohin:</b> Die Nachricht läuft über einen Automatisierungsdienst (Make) in mein Postfach und wird zur Sortierung kurz von einem KI-Modell (Google Gemini) zusammengefasst. Du erhältst eine automatische Eingangsbestätigung.</p>
         <p data-en="&lt;b&gt;Chat:&lt;/b&gt; Questions to the AI assistant are sent via n8n to an AI model from Mistral AI (provider based in France) and answered there. I do not store the chat history. Please do not enter personal data. The legal basis is your consent by clicking “Agree and start chat” (Art. 6(1)(a) GDPR)."><b>Chat:</b> Fragen an den KI-Assistenten werden über n8n an ein KI-Modell von Mistral AI (Anbieter mit Sitz in Frankreich) geschickt und dort beantwortet. Von meiner Seite wird der Chatverlauf nicht gespeichert. Bitte keine persönlichen Daten eingeben. Rechtsgrundlage ist die Einwilligung durch Klick auf „Einverstanden, Chat starten“ (Art. 6 Abs. 1 lit. a DSGVO).</p>
@@ -818,7 +821,7 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
     </details>
     <div class="c-alt label" data-en="Or directly by email">Oder direkt per E-Mail</div>
     <div class="c-row" style="margin-top:0">
-      <div class="mail"><span id="addr">oshurawski@yahoo.de</span><button class="cta" id="copy" type="button" data-en="Copy email">E-Mail kopieren</button></div>
+      <div class="mail" id="mailbox"><span id="addr" hidden></span><button class="cta" id="copy" type="button" data-en="Copy email">E-Mail kopieren</button></div>
       <span class="where" data-en="Open to Cologne, Düsseldorf, Dortmund, Essen &amp;amp; remote">Offen für Köln, Düsseldorf, Dortmund, Essen &amp; remote</span>
     </div>
   </div>
@@ -938,8 +941,9 @@ i18n.forEach(el=>el.dataset.de=el.innerHTML);
 const alts=[...document.querySelectorAll('[data-en-alt]')];
 alts.forEach(el=>el.dataset.deAlt=el.alt);
 let lang='de';
+fillMail();
 function setLang(l){lang=l;document.documentElement.lang=l;
-  i18n.forEach(el=>el.innerHTML=l==='en'?el.dataset.en:el.dataset.de);
+  i18n.forEach(el=>el.innerHTML=l==='en'?el.dataset.en:el.dataset.de);fillMail();
   alts.forEach(el=>el.alt=l==='en'?el.dataset.enAlt:el.dataset.deAlt);
   const [de,en]=langBtn.children;de.classList.toggle('on',l==='de');en.classList.toggle('on',l==='en');
   langBtn.setAttribute('aria-label',l==='en'?'Auf Deutsch umschalten':'Switch to English');
@@ -1042,13 +1046,21 @@ form.addEventListener('submit',e=>{
 /* links to the privacy note open it */
 document.querySelectorAll('a[href="#datenschutz"]').forEach(x=>x.addEventListener('click',()=>{document.getElementById('datenschutz').open=true}));
 
-/* copy email */
+/* copy email: the address is not in the HTML (spam protection), it is assembled here */
+function oxMail(){return [[111,115,104,117,114,97,119,115,107,105],[121,97,104,111,111,46,100,101]].map(c=>String.fromCharCode.apply(null,c)).join('@')}
+function fillMail(){document.querySelectorAll('.oxm').forEach(e=>e.textContent=oxMail())}
 const btn=document.getElementById('copy');
-btn.addEventListener('click',()=>{const a=document.getElementById('addr').textContent;
-  const L=()=>lang==='en'?['Copied','Copy email','Selected, please copy']:['Kopiert','E-Mail kopieren','Markiert, bitte kopieren'];
-  const done=()=>{btn.textContent=L()[0];setTimeout(()=>btn.textContent=L()[1],1800)};
-  const sel=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById('addr'));const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent=L()[2]};
-  try{navigator.clipboard.writeText(a).then(done,sel)}catch(e){sel()}});
+function legacyCopy(t){const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px';document.body.appendChild(ta);
+  ta.focus();ta.select();try{ta.setSelectionRange(0,t.length)}catch(e){}
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();btn.focus({preventScroll:true});return ok}
+btn.addEventListener('click',()=>{const a=oxMail();
+  const L=()=>lang==='en'?['Copied!','Copy email','Please copy manually']:['Kopiert!','E-Mail kopieren','Bitte von Hand kopieren'];
+  const done=()=>{btn.textContent=L()[0];clearTimeout(btn._t);btn._t=setTimeout(()=>btn.textContent=L()[1],2000)};
+  const show=()=>{const s=document.getElementById('addr');s.textContent=a;s.hidden=false;document.getElementById('mailbox').classList.add('show');
+    const r=document.createRange();r.selectNodeContents(s);const g=getSelection();g.removeAllRanges();g.addRange(r);btn.textContent=L()[2]};
+  const fallback=()=>{legacyCopy(a)?done():show()};
+  if(navigator.clipboard&&window.isSecureContext){try{navigator.clipboard.writeText(a).then(done,fallback)}catch(e){fallback()}}else fallback()});
 </script>
 
 
@@ -1178,7 +1190,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close
 function demo(q){
   const s=q.toLowerCase(),en=lg()==='en';
   if(/projekt|project|gebaut|built|hiesig|news/.test(s))return en?'Among other things, she built an AI news feed with the New York Times API, the product search "hiesig" for goods made in Europe, and an AI lead pipeline for her contact form with Make and Gemini.':'Sie hat unter anderem einen KI-News-Feed mit der New-York-Times-API gebaut, die Produktsuche „hiesig“ für Waren aus Europa und eine KI-Lead-Pipeline für ihr Kontaktformular mit Make und Gemini.';
-  if(/erreich|kontakt|reach|contact|mail/.test(s))return en?'The easiest way is the contact form on this page, or by email to oshurawski@yahoo.de.':'Am einfachsten über das Kontaktformular auf dieser Seite oder per E-Mail an oshurawski@yahoo.de.';
+  if(/erreich|kontakt|reach|contact|mail/.test(s))return en?'The easiest way is the contact form on this page, or by email to '+oxMail()+'.':'Am einfachsten über das Kontaktformular auf dieser Seite oder per E-Mail an '+oxMail()+'.';
   return en?'Oxana connects partnerships, sales and AI. She won over 150 partner companies at the Digital Career Institute and is currently training as an AI manager at STARTPLATZ in Cologne.':'Oxana verbindet Partnerschaften, Vertrieb und KI. Am Digital Career Institute hat sie über 150 Partnerunternehmen gewonnen, und gerade macht sie eine Weiterbildung zur KI-Managerin am STARTPLATZ in Köln.';
 }
 function ask(q){
